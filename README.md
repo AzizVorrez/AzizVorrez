@@ -1,7 +1,10 @@
-# [Ton Nom]
+# Aziz Vorrez 👨‍💻
 
-## À propos de moi
-Je suis passionné(e) par la programmation et le développement logiciel. J'adore explorer de nouvelles technologies et relever des défis techniques. Mon objectif est de créer des solutions innovantes qui apportent de la valeur aux utilisateurs.
+## About me
+I'm Aziz Vorrez, software engineer with 04 years of experience. 🔮
+With my skills in software engineering and business management, I am the founder of 03 digital innovation startups offering high-impact disruptive services and products in Africa. ❤
+
+With my years of experience and hard work, I can help you develop sophisticated and useful software for your business and your customers. 💪
 
 ## Compétences
 - Langages de programmation : [Liste des langages que tu maîtrises]
