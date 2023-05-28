@@ -1,5 +1,7 @@
 <h1 align="center">Hi 👋, I'm Aziz Vorrez</h1>
-<h3 align="center">I'm Aziz Vorrez, software engineer from Benin with 04 years of experience.</h3>
+<h3 align="center">I'm ***Aziz Vorrez***, software engineer from Benin with 04 years of experience.</h3>
+
+<p> With my years of experience and hard work, I can help you develop sophisticated and useful software for your business and your customers. 💪 </p>
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
@@ -18,3 +20,8 @@
 <p>&nbsp;<img align="center" src="https://github-readme-stats.vercel.app/api?username=azizvorrez&show_icons=true&locale=en" alt="azizvorrez" /></p>
 
 <p><img align="center" src="https://github-readme-streak-stats.herokuapp.com/?user=azizvorrez&" alt="azizvorrez" /></p>
+
+
+With my skills in software engineering and business management, I am the founder of 03 digital innovation startups offering high-impact disruptive services and products in Africa. ❤
+
+
