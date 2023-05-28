@@ -25,8 +25,8 @@
 <h2 align="left">My recent projects 🚀</h2>
 
 <ul>
-<a href="www.saasaitools.com" target="_blank"> Saas AI Tools </a> - A platform that aims to be a global directory of available AI tools.
-<a href="www.denonce.bj" target="_blank"> Denonce.bj </a> - A whistleblowing software designed for the country of Benin to report fraud, violations and scams.
+<li><a href="www.saasaitools.com" target="_blank"> Saas AI Tools </a></li> - A platform that aims to be a global directory of available AI tools.
+<li><a href="www.denonce.bj" target="_blank"> Denonce.bj </a></li> - A whistleblowing software designed for the country of Benin to report fraud, violations and scams.
 </ul>
 
 <h2 align="left">My experiences 🚀</h2>
