@@ -1,4 +1,5 @@
 <h1 align="center">Hi 👋, I'm Aziz Vorrez 👨‍💻</h1>
+<p align="center"> <a href="https://twitter.com/azizvorrez" target="blank"><img src="https://img.shields.io/twitter/follow/azizvorrez?logo=twitter&style=for-the-badge" alt="azizvorrez" /></a> </p>
 <h3 align="center">I'm <strong>Aziz Vorrez</strong>, software engineer from Benin with 04 years of experience.</h3>
 
 <p align="center"> With my years of experience and hard work, I can help you develop <strong>sophisticated and useful software</strong> for your business and your customers. 💪</p>
