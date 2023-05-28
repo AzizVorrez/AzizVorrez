@@ -39,4 +39,3 @@
 </p>
 
 <p align="center"><img src="https://github-readme-stats.vercel.app/api/top-langs?username=azizvorrez&show_icons=true&theme=radical&locale=en&layout=compact" alt="azizvorrez" /></p>
-<p align="left"> <a href="https://twitter.com/azizvorrez" target="blank"><img src="https://img.shields.io/twitter/follow/azizvorrez?logo=twitter&style=for-the-badge" alt="azizvorrez" /></a> </p>
