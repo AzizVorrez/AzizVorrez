@@ -27,11 +27,14 @@
 <ul>
 <li><a href="www.saasaitools.com" target="_blank"> Saas AI Tools </a></li> - A platform that aims to be a global directory of available AI tools.
 <li><a href="www.denonce.bj" target="_blank"> Denonce.bj </a></li> - A whistleblowing software designed for the country of Benin to report fraud, violations and scams.
+<li><a href="www.mood.com" target="_blank"> Mood </a></li> - A highly reputed event management platform in Benin and West Africa.
 </ul>
 
 <h2 align="left">My experiences 🚀</h2>
-- [Innov'Prime](www.innov-prime.com) - Software developer.
-- [FedRelay](www.fedrelay.com) - Co-founder & Project manager.
+<ul>
+<li><a href="www.innov-prime.com" target="_blank"> Innov'Prime </a></li> - Software developer.
+<li><a href="www.fedrelay.com" target="_blank"> FedRelay </a></li> - Co-founder & Project manager.
+</ul>
 
 <h3 align="left">Contact me ❤</h3>
 <p align="left"> <a href="https://twitter.com/azizvorrez" target="blank"><img src="https://img.shields.io/twitter/follow/azizvorrez?logo=twitter&style=for-the-badge" alt="azizvorrez" /></a> </p>
