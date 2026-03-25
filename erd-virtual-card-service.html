@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERD – Virtual Card Service with Monthly Fee Charging</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ── Reset & Base ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 50%, #162032 100%);
+      border-bottom: 2px solid #2563eb;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25);
+    }
+
+    .header-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 0.2rem;
+    }
+
+    .header-badge {
+      margin-left: auto;
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid #2563eb;
+      color: #93c5fd;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ── Main layout ─────────────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      grid-template-rows: 1fr;
+      overflow: hidden;
+      height: calc(100vh - 88px);
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────────────────────── */
+    aside {
+      background: #111827;
+      border-right: 1px solid #1e293b;
+      overflow-y: auto;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Legend */
+    .legend-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.35rem 0;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    .legend-dot {
+      width: 28px; height: 18px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 800; color: #fff;
+    }
+
+    .dot-core    { background: #1d4ed8; }
+    .dot-billing { background: #9333ea; }
+    .dot-card    { background: #0891b2; }
+    .dot-support { background: #059669; }
+
+    .legend-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .badge-pk { background: #ca8a04; color: #fff; }
+    .badge-fk { background: #dc2626; color: #fff; }
+
+    .cardinality-example {
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 0.2rem;
+    }
+
+    /* Billing flow */
+    .flow-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .flow-step {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      position: relative;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 42px;
+      width: 2px;
+      height: calc(100% - 16px);
+      background: #334155;
+    }
+
+    .flow-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800;
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+
+    .flow-text {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      padding-top: 3px;
+    }
+
+    .flow-text strong { color: #93c5fd; }
+
+    /* Entity summary */
+    .entity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .entity-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      background: #1e293b;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      transition: border-color 0.15s;
+    }
+
+    .entity-chip:hover { border-color: #475569; }
+
+    .chip-color {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Diagram area ────────────────────────────────────────────────────── */
+    #diagram-area {
+      position: relative;
+      overflow: hidden;
+      background: #0d1117;
+      background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* Zoom controls */
+    #zoom-controls {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    #zoom-controls button {
+      width: 36px; height: 36px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    #zoom-controls button:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    #zoom-label {
+      width: 36px;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #64748b;
+      padding: 2px 0;
+    }
+
+    /* Drag hint */
+    #drag-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid #334155;
+      border-radius: 9999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.75rem;
+      color: #64748b;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    /* Mermaid canvas wrapper */
+    #diagram-wrapper {
+      position: absolute;
+      top: 0; left: 0;
+      transform-origin: 0 0;
+      cursor: grab;
+      user-select: none;
+      padding: 2rem;
+    }
+
+    #diagram-wrapper:active { cursor: grabbing; }
+
+    /* Override Mermaid entity colours using CSS variables injected via theme */
+    .mermaid { min-width: max-content; }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: auto;
+        overflow: visible;
+      }
+
+      #diagram-area {
+        height: 70vh;
+      }
+
+      aside {
+        border-right: none;
+        border-bottom: 1px solid #1e293b;
+        max-height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════  HEADER  ═══════════════════════ -->
+<header>
+  <div class="header-icon">🗃️</div>
+  <div>
+    <h1>Virtual Card Service — Entity Relationship Diagram</h1>
+    <p>Monthly Fee Charging Model · 11 Entities · 14 Relationships</p>
+  </div>
+  <span class="header-badge">Interactive ERD</span>
+</header>
+
+<!-- ═══════════════════════  MAIN  ═══════════════════════ -->
+<main>
+
+  <!-- ───────── SIDEBAR ───────── -->
+  <aside>
+
+    <!-- Legend: entity colours -->
+    <div>
+      <div class="section-title">🎨 Entity Categories</div>
+      <div class="legend-card">
+        <div class="legend-item">
+          <div class="legend-dot dot-core">●</div>
+          <span>Core / Identity&nbsp;(Customer, Account, KYC)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-billing">●</div>
+          <span>Billing&nbsp;(Subscription, Charge, Payment, Plan, Schedule)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-card">●</div>
+          <span>Card&nbsp;(Virtual Card, Transactions)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-support">●</div>
+          <span>Support&nbsp;(Notification)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend: symbols -->
+    <div>
+      <div class="section-title">🔑 Symbols</div>
+      <div class="legend-card">
+        <div class="legend-item">
+          <span class="legend-badge badge-pk">PK</span>Primary Key
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge badge-fk">FK</span>Foreign Key
+        </div>
+        <div class="legend-item" style="flex-direction:column;align-items:flex-start;gap:0.2rem;">
+          <span style="font-size:0.8rem;">Cardinality notation:</span>
+          <div class="cardinality-example">||  – exactly one</div>
+          <div class="cardinality-example">o|  – zero or one</div>
+          <div class="cardinality-example">o{  – zero or many</div>
+          <div class="cardinality-example">|{  – one or many</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly billing flow -->
+    <div>
+      <div class="section-title">💰 Monthly Fee Billing Flow</div>
+      <div class="flow-card">
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-text">
+            <strong>SUBSCRIPTION</strong> active → generates a
+            <strong>MONTHLY_FEE_CHARGE</strong> each billing cycle.
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-text">
+            <strong>MONTHLY_FEE_CHARGE</strong> → amount debited from the
+            customer's <strong>VIRTUAL_CARD</strong>.
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-text">
+            <strong>PAYMENT</strong> → records the settlement
+            from the linked <strong>ACCOUNT</strong>.
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-text">
+            <strong>NOTIFICATION</strong> → alerts the
+            <strong>CUSTOMER</strong> before &amp; after each charge.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entity quick list -->
+    <div>
+      <div class="section-title">📋 Entities (11)</div>
+      <div class="entity-list">
+        <div class="entity-chip"><div class="chip-color" style="background:#1d4ed8"></div>CUSTOMER</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#1d4ed8"></div>KYC_VERIFICATION</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#1d4ed8"></div>ACCOUNT</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#0891b2"></div>VIRTUAL_CARD</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#9333ea"></div>SERVICE_PLAN</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#9333ea"></div>SUBSCRIPTION</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#9333ea"></div>MONTHLY_FEE_CHARGE</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#9333ea"></div>PAYMENT</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#0891b2"></div>CARD_TRANSACTION</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#9333ea"></div>FEE_SCHEDULE</div>
+        <div class="entity-chip"><div class="chip-color" style="background:#059669"></div>NOTIFICATION</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ───────── DIAGRAM ───────── -->
+  <div id="diagram-area">
+
+    <div id="zoom-controls">
+      <button id="btn-zoom-in"  title="Zoom in">＋</button>
+      <div id="zoom-label">100%</div>
+      <button id="btn-zoom-out" title="Zoom out">－</button>
+      <button id="btn-zoom-fit" title="Reset" style="font-size:0.8rem;">⊙</button>
+    </div>
+
+    <div id="drag-hint">🖱️ Drag to pan · Scroll to zoom</div>
+
+    <div id="diagram-wrapper">
+      <div class="mermaid">
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "background": "#0d1117",
+    "primaryColor": "#1e3a5f",
+    "primaryTextColor": "#e2e8f0",
+    "primaryBorderColor": "#2563eb",
+    "lineColor": "#475569",
+    "secondaryColor": "#1e293b",
+    "tertiaryColor": "#111827",
+    "fontFamily": "Segoe UI, system-ui, sans-serif",
+    "fontSize": "13px",
+    "edgeLabelBackground": "#1e293b",
+    "attributeBackgroundColorEven": "#162032",
+    "attributeBackgroundColorOdd": "#1a2840"
+  }
+}}%%
+erDiagram
+
+    CUSTOMER {
+        int customer_id PK
+        varchar first_name
+        varchar last_name
+        varchar email
+        varchar phone
+        varchar address
+        date date_of_birth
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    KYC_VERIFICATION {
+        int kyc_id PK
+        int customer_id FK
+        varchar document_type
+        varchar document_number
+        varchar verification_status
+        timestamp verified_at
+        timestamp created_at
+    }
+
+    ACCOUNT {
+        int account_id PK
+        int customer_id FK
+        varchar account_number
+        decimal balance
+        varchar currency
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    VIRTUAL_CARD {
+        int card_id PK
+        int account_id FK
+        int plan_id FK
+        varchar card_number
+        varchar card_holder_name
+        date expiry_date
+        varchar cvv
+        decimal spending_limit
+        varchar status
+        timestamp issued_at
+        timestamp cancelled_at
+    }
+
+    SERVICE_PLAN {
+        int plan_id PK
+        varchar plan_name
+        varchar description
+        decimal monthly_fee
+        decimal annual_fee
+        int max_cards_allowed
+        decimal transaction_limit
+        varchar currency
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    SUBSCRIPTION {
+        int subscription_id PK
+        int customer_id FK
+        int plan_id FK
+        date start_date
+        date end_date
+        varchar billing_cycle
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    MONTHLY_FEE_CHARGE {
+        int charge_id PK
+        int subscription_id FK
+        int card_id FK
+        decimal amount
+        varchar currency
+        date billing_period_start
+        date billing_period_end
+        date due_date
+        varchar charge_status
+        timestamp charged_at
+        timestamp created_at
+    }
+
+    PAYMENT {
+        int payment_id PK
+        int charge_id FK
+        int account_id FK
+        decimal amount_paid
+        varchar currency
+        varchar payment_method
+        varchar payment_status
+        varchar transaction_reference
+        timestamp paid_at
+    }
+
+    CARD_TRANSACTION {
+        int transaction_id PK
+        int card_id FK
+        varchar merchant_name
+        varchar merchant_category
+        decimal amount
+        varchar currency
+        varchar transaction_type
+        varchar status
+        timestamp transaction_date
+    }
+
+    FEE_SCHEDULE {
+        int fee_schedule_id PK
+        int plan_id FK
+        varchar fee_type
+        decimal fee_amount
+        varchar frequency
+        varchar description
+        varchar status
+        timestamp effective_from
+        timestamp effective_to
+    }
+
+    NOTIFICATION {
+        int notification_id PK
+        int customer_id FK
+        int charge_id FK
+        varchar notification_type
+        varchar channel
+        varchar message
+        varchar status
+        timestamp sent_at
+    }
+
+    CUSTOMER ||--o{ ACCOUNT : "owns"
+    CUSTOMER ||--|| KYC_VERIFICATION : "undergoes"
+    CUSTOMER ||--o{ SUBSCRIPTION : "subscribes to"
+    CUSTOMER ||--o{ NOTIFICATION : "receives"
+    ACCOUNT ||--o{ VIRTUAL_CARD : "has"
+    ACCOUNT ||--o{ PAYMENT : "funds"
+    VIRTUAL_CARD ||--o{ CARD_TRANSACTION : "processes"
+    VIRTUAL_CARD ||--o{ MONTHLY_FEE_CHARGE : "incurs"
+    SERVICE_PLAN ||--o{ VIRTUAL_CARD : "applies to"
+    SERVICE_PLAN ||--o{ SUBSCRIPTION : "defines"
+    SERVICE_PLAN ||--o{ FEE_SCHEDULE : "contains"
+    SUBSCRIPTION ||--o{ MONTHLY_FEE_CHARGE : "generates"
+    MONTHLY_FEE_CHARGE ||--o| PAYMENT : "settled by"
+    MONTHLY_FEE_CHARGE ||--o{ NOTIFICATION : "triggers"
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════  SCRIPTS  ═══════════════════════ -->
+<script>
+  /* ── Mermaid init ─────────────────────────────────────────────────────── */
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'loose',
+    er: { diagramPadding: 40, layoutDirection: 'TB', minEntityWidth: 200, minEntityHeight: 40, entityPadding: 15 }
+  });
+
+  /* ── Pan & Zoom ───────────────────────────────────────────────────────── */
+  const area    = document.getElementById('diagram-area');
+  const wrapper = document.getElementById('diagram-wrapper');
+  const label   = document.getElementById('zoom-label');
+  const hint    = document.getElementById('drag-hint');
+
+  let scale  = 1;
+  let tx     = 0;
+  let ty     = 0;
+  let dragging = false;
+  let startX   = 0;
+  let startY   = 0;
+  let initTx   = 0;
+  let initTy   = 0;
+
+  const MIN_SCALE      = 0.25;
+  const MAX_SCALE      = 3;
+  const ZOOM_STEP      = 1.2;   // multiplier for button zoom steps
+  const ZOOM_SENSITIVITY = 0.001; // wheel delta to scale factor
+
+  function applyTransform() {
+    wrapper.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    label.textContent = Math.round(scale * 100) + '%';
+  }
+
+  /* Scroll to zoom */
+  area.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect   = area.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const delta   = -e.deltaY * ZOOM_SENSITIVITY;
+    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale + delta * scale));
+    const ratio   = newScale / scale;
+
+    tx = mouseX - ratio * (mouseX - tx);
+    ty = mouseY - ratio * (mouseY - ty);
+    scale = newScale;
+    applyTransform();
+  }, { passive: false });
+
+  /* Mouse drag */
+  area.addEventListener('mousedown', e => {
+    if (e.target.closest('#zoom-controls')) return;
+    dragging = true;
+    startX = e.clientX; startY = e.clientY;
+    initTx = tx; initTy = ty;
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    tx = initTx + (e.clientX - startX);
+    ty = initTy + (e.clientY - startY);
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => { dragging = false; });
+
+  /* Touch drag */
+  let lastTouchDist = null;
+  area.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      dragging = true;
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      initTx = tx; initTy = ty;
+    }
+    if (e.touches.length === 2) {
+      lastTouchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    }
+  }, { passive: true });
+
+  area.addEventListener('touchmove', e => {
+    if (e.touches.length === 1 && dragging) {
+      tx = initTx + (e.touches[0].clientX - startX);
+      ty = initTy + (e.touches[0].clientY - startY);
+      applyTransform();
+    }
+    if (e.touches.length === 2 && lastTouchDist) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const ratio = dist / lastTouchDist;
+      scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * ratio));
+      lastTouchDist = dist;
+      applyTransform();
+    }
+  }, { passive: true });
+
+  area.addEventListener('touchend', () => { dragging = false; lastTouchDist = null; });
+
+  /* Zoom buttons */
+  document.getElementById('btn-zoom-in').addEventListener('click', () => {
+    scale = Math.min(MAX_SCALE, scale * ZOOM_STEP);
+    applyTransform();
+  });
+
+  document.getElementById('btn-zoom-out').addEventListener('click', () => {
+    scale = Math.max(MIN_SCALE, scale / ZOOM_STEP);
+    applyTransform();
+  });
+
+  document.getElementById('btn-zoom-fit').addEventListener('click', () => {
+    scale = 1; tx = 0; ty = 0;
+    applyTransform();
+  });
+
+  /* Hide drag hint after first interaction */
+  area.addEventListener('mousedown', () => { hint.style.opacity = '0'; }, { once: true });
+
+  /* ── Post-render: apply entity category colours ───────────────────────── */
+  window.addEventListener('load', () => {
+    mermaid.run({ querySelector: '.mermaid' }).then(() => {
+      colourEntities();
+    });
+  });
+
+  const ENTITY_COLOURS = {
+    // Core / Identity
+    CUSTOMER:            { border: '#2563eb', header: '#1e3a5f', row1: '#162032', row2: '#1a2840' },
+    KYC_VERIFICATION:    { border: '#2563eb', header: '#1e3a5f', row1: '#162032', row2: '#1a2840' },
+    ACCOUNT:             { border: '#2563eb', header: '#1e3a5f', row1: '#162032', row2: '#1a2840' },
+    // Card
+    VIRTUAL_CARD:        { border: '#0891b2', header: '#164e63', row1: '#0c3344', row2: '#0f3d52' },
+    CARD_TRANSACTION:    { border: '#0891b2', header: '#164e63', row1: '#0c3344', row2: '#0f3d52' },
+    // Billing
+    SERVICE_PLAN:        { border: '#9333ea', header: '#4c1d95', row1: '#2d1254', row2: '#351560' },
+    SUBSCRIPTION:        { border: '#9333ea', header: '#4c1d95', row1: '#2d1254', row2: '#351560' },
+    MONTHLY_FEE_CHARGE:  { border: '#9333ea', header: '#4c1d95', row1: '#2d1254', row2: '#351560' },
+    PAYMENT:             { border: '#9333ea', header: '#4c1d95', row1: '#2d1254', row2: '#351560' },
+    FEE_SCHEDULE:        { border: '#9333ea', header: '#4c1d95', row1: '#2d1254', row2: '#351560' },
+    // Support
+    NOTIFICATION:        { border: '#059669', header: '#064e3b', row1: '#022c22', row2: '#053528' },
+  };
+
+  function colourEntities() {
+    const svg = wrapper.querySelector('svg');
+    if (!svg) return;
+
+    /* Make SVG fully visible */
+    svg.style.maxWidth  = 'none';
+    svg.style.height    = 'auto';
+    svg.removeAttribute('height');
+
+    /* Colour every entity group */
+    svg.querySelectorAll('g.er.entityBox, g[id]').forEach(g => {
+      /* Find entity label (rect + text sibling) */
+      const label = g.querySelector('text.er.entityLabel');
+      if (!label) return;
+      const name  = (label.textContent || '').trim().replace(/\s+/g, '_');
+      const cfg   = ENTITY_COLOURS[name];
+      if (!cfg) return;
+
+      /* Header rect */
+      const headerRect = g.querySelector('rect.er.entityBox');
+      if (headerRect) {
+        headerRect.setAttribute('fill',   cfg.header);
+        headerRect.setAttribute('stroke', cfg.border);
+        headerRect.setAttribute('stroke-width', '2');
+      }
+
+      /* Attribute rows */
+      const attrRects = g.querySelectorAll('rect.er.attributeBoxEven, rect.er.attributeBoxOdd');
+      attrRects.forEach((r, i) => {
+        r.setAttribute('fill', i % 2 === 0 ? cfg.row1 : cfg.row2);
+        r.setAttribute('stroke', cfg.border);
+        r.setAttribute('stroke-opacity', '0.4');
+      });
+
+      /* Hover effect */
+      g.style.cursor = 'pointer';
+      g.addEventListener('mouseenter', () => {
+        headerRect && headerRect.setAttribute('filter', 'brightness(1.3)');
+      });
+      g.addEventListener('mouseleave', () => {
+        headerRect && headerRect.removeAttribute('filter');
+      });
+    });
+
+    /* Colour relationship lines */
+    svg.querySelectorAll('path.er.relationshipLine').forEach(path => {
+      path.setAttribute('stroke', '#475569');
+      path.setAttribute('stroke-width', '1.5');
+    });
+
+    /* PK / FK label badges */
+    svg.querySelectorAll('text.er.attributeType').forEach(t => {
+      const txt = (t.textContent || '').trim();
+      if (txt === 'PK') {
+        t.setAttribute('fill', '#fbbf24');
+        t.setAttribute('font-weight', '800');
+      } else if (txt === 'FK') {
+        t.setAttribute('fill', '#f87171');
+        t.setAttribute('font-weight', '800');
+      }
+    });
+  }
+</script>
+</body>
+</html>
